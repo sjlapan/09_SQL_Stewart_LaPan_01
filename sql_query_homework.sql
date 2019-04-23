@@ -82,14 +82,59 @@ WHERE last_name = "Williams";
 SHOW CREATE TABLE address;
 
 -- 6a. Use JOIN to display the first and last names, as well as the address, of each staff member. Use the tables staff and address:
+SELECT COUNT(*)
+FROM address;
+
+SELECT *
+FROM staff;
+
+SELECT first_name, last_name, address
+FROM staff
+LEFT JOIN address 
+USING (address_id);
 
 -- 6b. Use JOIN to display the total amount rung up by each staff member in August of 2005. Use tables staff and payment.
 
+SELECT * FROM payment;
+
+SELECT *
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = "payment";
+
+SELECT staff_id, sum(amount), payment_date
+FROM payment
+LEFT JOIN staff
+USING (staff_id)
+WHERE payment_date >= "2005-08-01"
+AND payment_date < "2005-09-01"
+GROUP BY staff_id;
+
+
 -- 6c. List each film and the number of actors who are listed for that film. Use tables film_actor and film. Use inner join.
 
+SELECT *
+FROM film_actor;
+
+
+SELECT *
+FROM film;
+
+SELECT film_id, count(actor_id)
+FROM film_actor
+INNER JOIN film
+USING (film_id)
+GROUP BY film_id;
 -- 6d. How many copies of the film Hunchback Impossible exist in the inventory system?
 
+SELECT film_id, title, count(title)
+FROM film
+INNER JOIN inventory
+USING (film_id)
+WHERE title = "Hunchback Impossible";
+
 -- 6e. Using the tables payment and customer and the JOIN command, list the total paid by each customer. List the customers alphabetically by last name:
+
+
 
 -- 7a. The music of Queen and Kris Kristofferson have seen an unlikely resurgence. As an unintended consequence, films starting with the letters K and Q have also soared in popularity. Use subqueries to display the titles of movies starting with the letters K and Q whose language is English.
 
