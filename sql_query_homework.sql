@@ -134,11 +134,39 @@ WHERE title = "Hunchback Impossible";
 
 -- 6e. Using the tables payment and customer and the JOIN command, list the total paid by each customer. List the customers alphabetically by last name:
 
+select count(*)
+from customer
 
+select count(*)
+from payment
+
+
+SELECT customer_id, last_name, first_name, sum(amount)
+FROM customer
+LEFT JOIN payment
+USING (customer_id)
+GROUP BY customer_id
+ORDER BY last_name;
 
 -- 7a. The music of Queen and Kris Kristofferson have seen an unlikely resurgence. As an unintended consequence, films starting with the letters K and Q have also soared in popularity. Use subqueries to display the titles of movies starting with the letters K and Q whose language is English.
 
+SELECT title, name
+FROM film
+LEFT JOIN language
+USING (language_id)
+WHERE name = "English" 
+AND LEFT(title, 1) = "Q" OR LEFT(title, 1) ="K";
+
 -- 7b. Use subqueries to display all actors who appear in the film Alone Trip.
+
+SELECT last_name, first_name, film_id, title
+FROM film_actor
+JOIN actor
+USING (actor_id)
+JOIN film
+USING(film_id)
+WHERE title = "Alone Trip";
+
 
 -- 7c. You want to run an email marketing campaign in Canada, for which you will need the names and email addresses of all Canadian customers. Use joins to retrieve this information.
 
