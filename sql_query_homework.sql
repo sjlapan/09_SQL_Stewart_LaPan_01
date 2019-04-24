@@ -135,10 +135,10 @@ WHERE title = "Hunchback Impossible";
 -- 6e. Using the tables payment and customer and the JOIN command, list the total paid by each customer. List the customers alphabetically by last name:
 
 select count(*)
-from customer
+from customer;
 
 select count(*)
-from payment
+from payment;
 
 
 SELECT customer_id, last_name, first_name, sum(amount)
@@ -170,9 +170,43 @@ WHERE title = "Alone Trip";
 
 -- 7c. You want to run an email marketing campaign in Canada, for which you will need the names and email addresses of all Canadian customers. Use joins to retrieve this information.
 
+SELECT last_name, first_name, email, country
+FROM customer
+LEFT JOIN address
+USING (address_id)
+LEFT JOIN city
+USING (city_id)
+LEFT JOIN country
+USING (country_id)
+WHERE country = "Canada";
+
+
 -- 7d. Sales have been lagging among young families, and you wish to target all family movies for a promotion. Identify all movies categorized as family films.
 
+SELECT * FROM Category;
+
+
+SELECT title, name
+FROM film
+LEFT JOIN film_category
+USING (film_id)
+LEFT JOIN category
+USING (category_id)
+WHERE name = "family";
+
 -- 7e. Display the most frequently rented movies in descending order.
+
+SELECT *
+FROM inventory;
+
+SELECT title, COUNT(rental_id)
+FROM film
+LEFT JOIN inventory
+USING (film_id)
+LEFT JOIN rental
+USING (inventory_id)
+GROUP BY title
+ORDER BY COUNT(rental_id) DESC;
 
 -- 7f. Write a query to display how much business, in dollars, each store brought in.
 
