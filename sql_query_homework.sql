@@ -82,20 +82,13 @@ WHERE last_name = "Williams";
 SHOW CREATE TABLE address;
 
 -- 6a. Use JOIN to display the first and last names, as well as the address, of each staff member. Use the tables staff and address:
-SELECT COUNT(*)
-FROM address;
-
-SELECT *
-FROM staff;
 
 SELECT first_name, last_name, address
 FROM staff
-LEFT JOIN address 
+JOIN address 
 USING (address_id);
 
 -- 6b. Use JOIN to display the total amount rung up by each staff member in August of 2005. Use tables staff and payment.
-
-SELECT * FROM payment;
 
 SELECT *
 FROM INFORMATION_SCHEMA.COLUMNS
@@ -103,7 +96,7 @@ WHERE TABLE_NAME = "payment";
 
 SELECT staff_id, sum(amount), payment_date
 FROM payment
-LEFT JOIN staff
+JOIN staff
 USING (staff_id)
 WHERE payment_date >= "2005-08-01"
 AND payment_date < "2005-09-01"
@@ -112,38 +105,24 @@ GROUP BY staff_id;
 
 -- 6c. List each film and the number of actors who are listed for that film. Use tables film_actor and film. Use inner join.
 
-SELECT *
-FROM film_actor;
-
-
-SELECT *
-FROM film;
-
 SELECT film_id, count(actor_id)
 FROM film_actor
-INNER JOIN film
+JOIN film
 USING (film_id)
 GROUP BY film_id;
 -- 6d. How many copies of the film Hunchback Impossible exist in the inventory system?
 
 SELECT film_id, title, count(title)
 FROM film
-INNER JOIN inventory
+JOIN inventory
 USING (film_id)
 WHERE title = "Hunchback Impossible";
 
 -- 6e. Using the tables payment and customer and the JOIN command, list the total paid by each customer. List the customers alphabetically by last name:
 
-select count(*)
-from customer;
-
-select count(*)
-from payment;
-
-
 SELECT customer_id, last_name, first_name, sum(amount)
 FROM customer
-LEFT JOIN payment
+JOIN payment
 USING (customer_id)
 GROUP BY customer_id
 ORDER BY last_name;
@@ -152,7 +131,7 @@ ORDER BY last_name;
 
 SELECT title, name
 FROM film
-LEFT JOIN language
+JOIN language
 USING (language_id)
 WHERE name = "English" 
 AND LEFT(title, 1) = "Q" OR LEFT(title, 1) ="K";
@@ -172,50 +151,97 @@ WHERE title = "Alone Trip";
 
 SELECT last_name, first_name, email, country
 FROM customer
-LEFT JOIN address
+JOIN address
 USING (address_id)
-LEFT JOIN city
+JOIN city
 USING (city_id)
-LEFT JOIN country
+JOIN country
 USING (country_id)
 WHERE country = "Canada";
 
-
 -- 7d. Sales have been lagging among young families, and you wish to target all family movies for a promotion. Identify all movies categorized as family films.
-
-SELECT * FROM Category;
-
 
 SELECT title, name
 FROM film
-LEFT JOIN film_category
+JOIN film_category
 USING (film_id)
-LEFT JOIN category
+JOIN category
 USING (category_id)
 WHERE name = "family";
 
 -- 7e. Display the most frequently rented movies in descending order.
 
-SELECT *
-FROM inventory;
 
 SELECT title, COUNT(rental_id)
 FROM film
-LEFT JOIN inventory
+JOIN inventory
 USING (film_id)
-LEFT JOIN rental
+JOIN rental
 USING (inventory_id)
 GROUP BY title
 ORDER BY COUNT(rental_id) DESC;
 
 -- 7f. Write a query to display how much business, in dollars, each store brought in.
 
+SELECT store_id, SUM(amount)
+FROM store
+JOIN inventory
+USING (store_id)
+JOIN rental
+USING (inventory_id)
+JOIN payment
+USING (rental_id)
+GROUP BY store_id;
+
 -- 7g. Write a query to display for each store its store ID, city, and country.
+
+SELECT store_id, city, country
+FROM store
+JOIN address
+USING (address_id)
+JOIN city
+USING (city_id)
+JOIN country
+USING (country_id);
 
 -- 7h. List the top five genres in gross revenue in descending order. (Hint: you may need to use the following tables: category, film_category, inventory, payment, and rental.)
 
+SELECT name, SUM(amount)
+FROM category
+JOIN film_category
+USING (category_id)
+JOIN inventory
+USING (film_id)
+JOIN rental
+USING (inventory_id)
+JOIN payment
+USING (rental_id)
+GROUP BY name
+ORDER BY SUM(amount) DESC
+LIMIT 5;
+
 -- 8a. In your new role as an executive, you would like to have an easy way of viewing the Top five genres by gross revenue. Use the solution from the problem above to create a view. If you haven't solved 7h, you can substitute another query to create a view.
+
+CREATE VIEW top_five_genres_by_revenue AS
+SELECT name, SUM(amount)
+FROM category
+JOIN film_category
+USING (category_id)
+JOIN inventory
+USING (film_id)
+JOIN rental
+USING (inventory_id)
+JOIN payment
+USING (rental_id)
+GROUP BY name
+ORDER BY SUM(amount) DESC
+LIMIT 5;
 
 -- 8b. How would you display the view that you created in 8a?
 
+SELECT *
+FROM top_five_genres_by_revenue;
+
 -- 8c. You find that you no longer need the view top_five_genres. Write a query to delete it.
+
+DROP VIEW top_five_genres_by_revenue;
